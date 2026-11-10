@@ -666,10 +666,11 @@
   padding: clamp(20px, 1.8vw, 28px);
   border-radius: var(--v2-r);
   /* One long, soft curve for the widening, so moving across the cards feels like a glide. */
+  --butter: cubic-bezier(0.65, 0, 0.35, 1); /* eases in and out: no jump at the start, no snap at the end */
   transition:
-    flex-grow 850ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 600ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 600ms cubic-bezier(0.22, 1, 0.36, 1);
+    flex-grow 1100ms var(--butter),
+    transform 1100ms var(--butter),
+    box-shadow 1100ms var(--butter);
   will-change: flex-grow;
 }
 .v2-step[data-open] {
@@ -722,7 +723,7 @@
   letter-spacing: -0.06em;
   opacity: 0.1;
   pointer-events: none;
-  transition: opacity 400ms;
+  transition: opacity 1100ms var(--butter);
 }
 .v2-step[data-open] .v2-step-big {
   opacity: 0.16;
@@ -752,7 +753,7 @@
   height: 34px;
   border-radius: 50%;
   background: var(--white);
-  transition: transform 400ms var(--ease);
+  transition: transform 1100ms var(--butter);
 }
 .v2-step-1 .v2-step-toggle,
 .v2-step-2 .v2-step-toggle,
@@ -794,21 +795,33 @@
   letter-spacing: -0.03em;
 }
 /* The step text slides open on the widened card. */
+/* Closing: the text fades out quickly. Opening: it waits for the card to get going, then drifts up and in. */
 .v2-step-more {
-  display: grid;
-  grid-template-rows: 0fr;
-  opacity: 0;
-  transition:
-    grid-template-rows 700ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 350ms ease;
-}
-.v2-step-more > * {
+  max-height: 0;
   overflow: hidden;
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    max-height 900ms var(--butter),
+    opacity 300ms ease,
+    transform 600ms var(--butter);
 }
 .v2-step[data-open] .v2-step-more {
-  grid-template-rows: 1fr;
+  max-height: 240px;
   opacity: 1;
-  transition-delay: 200ms;
+  transform: none;
+  transition:
+    max-height 1000ms var(--butter) 150ms,
+    opacity 700ms ease 450ms,
+    transform 900ms var(--butter) 400ms;
+}
+.v2-step-body {
+  flex-shrink: 0;
+}
+.v2-step-1 .v2-step-when,
+.v2-step-2 .v2-step-when,
+.v2-step-3 .v2-step-when {
+  color: var(--paper-ink);
 }
 /* The text keeps its open width while the card grows, so it fades in without re-wrapping. */
 .v2-step-text {
@@ -1357,7 +1370,7 @@
     min-height: 300px;
   }
   .v2-step-more {
-    grid-template-rows: 1fr;
+    max-height: none;
     opacity: 1;
   }
   .v2-step-hit,
