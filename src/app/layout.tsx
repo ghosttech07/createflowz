@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Barlow, Barlow_Condensed, Poppins } from "next/font/google";
 import { studio } from "@/content/site";
+import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 import "./v2.css";
 
@@ -28,6 +29,7 @@ const description =
   "Createflowz is a branding and web studio. We build brands, websites and apps, then bring the customers with Google and Meta ads, SEO and social. For startups, online stores, local businesses and established brands in the US, UK and Canada.";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title,
   description,
   openGraph: { title, description, type: "website", siteName: studio.name, locale: "en_US" },
@@ -35,8 +37,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0a",
-  colorScheme: "dark",
+  themeColor: "#ededed",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
