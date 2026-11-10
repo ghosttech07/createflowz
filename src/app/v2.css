@@ -1377,6 +1377,13 @@
   .v2-step-toggle {
     display: none;
   }
+  /* Phone: the faint step number sits small in the top-right, clear of the step name. */
+  .v2-step-big {
+    top: 56px;
+    left: auto;
+    right: 18px;
+    font-size: 72px;
+  }
   .v2-footer-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1531,8 +1538,11 @@
   font-size: 12px;
 }
 @media (max-width: 900px) {
+  /* Phone: a smaller laptop, nudged right so the tilted keyboard stays on screen. */
   .mbp {
-    --w: 78vw;
+    --w: 66vw;
+    margin-left: 18vw;
+    margin-bottom: calc(var(--w) * 0.36);
   }
   .v2-hero-art .v2-float-lime,
   .v2-hero-art .v2-float-black {
