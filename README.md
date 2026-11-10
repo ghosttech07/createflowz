@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Createflowz website
 
-## Getting Started
+Next.js (App Router) homepage for Createflowz.
 
-First, run the development server:
+## Run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000. The page reloads as you edit.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Editing the site
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**All words, links and images are in [`src/content/site.ts`](src/content/site.ts).** Change text there and save;
+you never need to touch the layout files for copy changes.
 
-## Learn More
+| To change | Edit in `site.ts` |
+| --- | --- |
+| Email, booking link, who clients talk to | `contact` |
+| Hero headline, sentence and buttons | `hero` |
+| The four service fields | `services.items` |
+| Case studies | `work.cases` |
+| Process steps | `process.steps` |
+| Testimonial (hidden until `show: true`) | `testimonial` |
+| FAQ | `faq.items` |
+| Contact picker options | `brief` |
+| Footer and clocks | `footer` |
 
-To learn more about Next.js, take a look at the following resources:
+Case-study screenshots live in `public/images/work/` (laptop 1440×900 and phone 390×844).
+To add a case study, drop its two screenshots there and add an entry to `work.cases`.
+The logo is `public/brand/createflowz-mask.png` (white on transparent; the site recolours it).
+Send an SVG of the logo when you have one and it will replace the PNG.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Colours, fonts and sizes are tokens at the top of [`src/app/globals.css`](src/app/globals.css) (`--accent` is the logo lime).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Placeholders to replace before launch
 
-## Deploy on Vercel
+Anything in **[square brackets]** shows in a muted grey on the page, and only the bracketed part is greyed:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `contact.email` (confirm `hello@createflowz.com`) and `contact.bookingUrl` (a Calendly or Cal.com link; while it is
+  empty, no booking link is shown)
+- Founder name, studio city and the reply-time promise in `contact`
+- One real result for each case study, and the rest of the Aram scope
+- The build timeline in `process.steps`, and FAQ prices, timelines and minimum term
+- Privacy policy link
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The testimonial section is hidden until a real quote exists; fill `testimonial` and set `show: true`.
+
+### Client sites
+
+Visitors will click through from the case studies, so fix these on the client sites first:
+
+- Alt Pouches: a "Lorem Ipsum" placeholder under "EVERY ALT FLAVOR IN ONE EXCLUSIVE PACK!".
+- Melt Pizza: a full-screen popup still says "We're closing for the winter season and will see you in 2026".
+  The Melt screenshots here were taken with that popup closed.
+
+## Next step: a visual editor (CMS)
+
+`site.ts` is shaped so each block maps to a Sanity document type. Connecting Sanity will let non-developers
+edit everything in a browser dashboard, with case studies as their own pages.
+
+## Deploy
+
+Push to GitHub and import the repo on Vercel; no configuration is needed.

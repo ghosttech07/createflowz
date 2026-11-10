@@ -1,26 +1,2264 @@
 @import "tailwindcss";
 
+/* ---------- Tokens: lime and black (the client-approved "old screen" design) ---------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0a0a0a;
+  --surface: #161616;
+  --surface-hover: #262626;
+  --ink: #f2f2f2;
+  --muted: #a3a3a3;
+  --accent: #84ff00; /* sampled from the logo */
+  --on-accent: #0a0a0a;
+  --paper: #ededed;
+  --white: #ffffff;
+  --paper-ink: #0a0a0a;
+  --paper-muted: #4d4d4d;
+  --lime-muted: #1f3a00;
+  --focus-on-light: #0a0a0a;
+  --scrim: rgb(10 10 10 / 0.72);
+  --danger: #ff8a80;
+
+  --font-display-stack: var(--font-display), "Arial Narrow", sans-serif;
+  --font-text-stack: var(--font-text), system-ui, sans-serif;
+
+  /* Five type steps */
+  --t-1: clamp(76px, 12.5vw, 200px);
+  --t-2: clamp(44px, 6vw, 96px);
+  --t-3: clamp(24px, 2.5vw, 36px);
+  --t-4: 18px;
+  --t-5: 14px;
+
+  --m: clamp(16px, 2.2vw, 32px); /* the page's one pair of outer margins */
+  --gap-section: clamp(120px, 14vw, 200px);
+  --header-h: 84px;
+  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-text-stack);
+  --font-display: var(--font-display-stack);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------- Base ---------- */
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Anchor jumps and keyboard focus land below the fixed header, not under it. */
+  scroll-padding-top: var(--header-h);
+  scrollbar-color: var(--surface-hover) var(--bg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  caret-color: var(--accent);
+  font-family: var(--font-text-stack);
+  font-size: var(--t-4);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+p,
+blockquote {
+  text-wrap: pretty;
+}
+img {
+  display: block;
+  max-width: 100%;
+}
+a {
+  color: inherit;
+}
+main:focus {
+  outline: none;
+}
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+/* Lime vanishes on lime and on the light field, so focus turns black there. */
+.tile-lime :focus-visible,
+.proof :focus-visible,
+.footer :focus-visible,
+.site-header[data-theme="lime"] :focus-visible,
+.site-header[data-theme="paper"] :focus-visible,
+.on-white :focus-visible,
+.site-header[data-theme="white"] :focus-visible {
+  outline-color: var(--focus-on-light);
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+[data-placeholder] {
+  color: var(--muted);
+}
+.tile-lime [data-placeholder],
+.proof [data-placeholder] {
+  color: var(--paper-muted);
+}
+.footer [data-placeholder] {
+  color: var(--lime-muted);
+}
+.skip-link {
+  position: fixed;
+  left: var(--m);
+  top: 12px;
+  z-index: 100;
+  padding: 12px 18px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+  transform: translateY(-160%);
+  transition: transform 200ms var(--ease);
+}
+.skip-link:focus-visible {
+  transform: none;
+  outline-color: var(--ink);
+}
+
+/* ---------- Scramble: highlighted words ---------- */
+/* The real text holds the width (transparent while scrambling); the live layer shows the scramble on top of it. */
+.scramble {
+  display: inline-grid;
+  cursor: default;
+}
+a .scramble {
+  cursor: inherit;
+}
+.scramble-text,
+.scramble-live {
+  grid-area: 1 / 1;
+}
+.scramble-text.is-scrambling {
+  color: transparent;
+}
+.scramble-live {
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ---------- Buttons and links ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 0;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 180ms var(--ease),
+    background-color 300ms,
+    color 300ms;
+}
+.btn:hover {
+  transform: translateY(-2px);
+}
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+.btn-accent {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.btn-ink {
+  background: var(--paper-ink);
+  color: var(--accent);
+}
+.proof .btn-ink {
+  color: var(--paper);
+}
+.btn-quiet {
+  background: var(--surface);
+  color: var(--ink);
+}
+.btn-quiet:hover {
+  background: var(--surface-hover);
+}
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  text-decoration-thickness: 2px;
+  transition:
+    text-decoration-color 200ms,
+    color 200ms;
+}
+.text-link:hover {
+  color: var(--accent);
+}
+
+.proof .text-link:hover {
+  color: inherit;
+  text-decoration-thickness: 3px;
+}
+
+/* ---------- Header: a plain bar in the colour of the chapter beneath ---------- */
+.site-header {
+  --h-bg: var(--bg);
+  --h-ink: var(--ink);
+  --h-btn-bg: var(--accent);
+  --h-btn-ink: var(--on-accent);
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  box-sizing: border-box;
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 0 var(--m);
+  background: var(--h-bg);
+  color: var(--h-ink);
+  transition:
+    color 300ms,
+    background-color 300ms;
+}
+.site-header[data-theme="surface"] {
+  --h-bg: var(--surface);
+}
+.site-header[data-theme="lime"],
+.site-header[data-theme="paper"],
+.site-header[data-theme="white"] {
+  --h-ink: var(--paper-ink);
+  --h-btn-bg: var(--paper-ink);
+  --h-btn-ink: var(--accent);
+}
+.site-header[data-theme="lime"] {
+  --h-bg: var(--accent);
+}
+.site-header[data-theme="paper"] {
+  --h-bg: var(--paper);
+  --h-btn-ink: var(--paper);
+}
+.site-header[data-theme="white"] {
+  --h-bg: var(--white);
+  --h-btn-ink: var(--white);
+}
+.wordmark {
+  display: block;
+  margin-right: auto;
+}
+.wordmark-mark {
+  display: block;
+  height: 30px;
+  aspect-ratio: 882 / 161;
+  background-color: currentColor;
+  mask: url("/brand/createflowz-mask.png") center / contain no-repeat;
+  transition: background-color 300ms;
+}
+/* "Let's talk": an underlined text link, as on the reference. */
+.header-talk {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-display-stack);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.header-talk::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  height: 2px;
+  background: currentColor;
+  transform-origin: right;
+  transition: transform 300ms var(--ease);
+}
+.header-talk:hover::after {
+  transform: scaleX(0.35);
+}
+
+/* Round menu button: a filled circle in the header's ink with two lines; it turns into a cross when open. */
+.menu-btn {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: var(--h-ink);
+  color: var(--h-bg);
+  list-style: none;
+  cursor: pointer;
+  transition:
+    transform 300ms var(--ease),
+    background-color 300ms,
+    color 300ms;
+}
+.menu-btn::-webkit-details-marker {
+  display: none;
+}
+.menu-btn:hover {
+  transform: scale(1.06);
+}
+.menu-lines,
+.menu-lines::before {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  transition:
+    transform 300ms var(--ease),
+    width 300ms var(--ease),
+    top 300ms var(--ease);
+}
+.menu-lines {
+  position: relative;
+  translate: 0 -3px;
+}
+.menu-lines::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 0;
+  width: 14px;
+}
+.nav-menu[open] .menu-btn {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.nav-menu[open] .menu-lines {
+  translate: 0 0;
+  transform: rotate(45deg);
+}
+.nav-menu[open] .menu-lines::before {
+  top: 0;
+  width: 20px;
+  transform: rotate(-90deg);
+}
+.menu-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  align-content: center;
+  gap: 48px;
+  box-sizing: border-box;
+  padding: var(--header-h) clamp(var(--m), 12vw, 220px) 48px;
+  background: var(--bg);
+  color: var(--ink);
+  overflow-y: auto;
+}
+.nav-menu[open] .menu-panel {
+  animation: menu-in 500ms var(--ease) both;
+}
+@keyframes menu-in {
+  from {
+    clip-path: circle(0 at calc(100% - var(--m) - 26px) calc(var(--header-h) / 2));
+  }
+  to {
+    clip-path: circle(150% at calc(100% - var(--m) - 26px) calc(var(--header-h) / 2));
+  }
+}
+.menu-panel nav {
+  display: grid;
+  justify-items: start;
+}
+.menu-panel nav a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 20px;
+  font-family: var(--font-display-stack);
+  font-size: clamp(48px, 8vw, 112px);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: color 200ms;
+}
+.menu-panel nav a:hover,
+.menu-panel nav a[aria-current="true"] {
+  color: var(--accent);
+}
+.menu-num {
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.menu-email {
+  justify-self: start;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+/* The logo and "Let's talk" stay above the open menu. */
+.wordmark,
+.header-talk {
+  position: relative;
+  z-index: 2;
+}
+/* The header bar stays dark above the open menu. */
+.site-header:has(.nav-menu[open]) {
+  --h-bg: var(--bg);
+  --h-ink: var(--ink);
+}
+
+/* ---------- Hero: dark, left-aligned, a giant faint "fl" from the logo behind ---------- */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 100svh;
+  box-sizing: border-box;
+  padding: calc(var(--header-h) + 40px) var(--m) 96px clamp(var(--m), 13vw, 250px);
+  overflow: clip;
+  background: var(--bg);
+}
+.hero-art {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: var(--ink);
+}
+.hero-ring {
+  position: absolute;
+  top: 50%;
+  left: 66%;
+  width: 118svh;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border: 1px solid #2a2a2a;
+  border-radius: 50%;
+}
+.hero-mark {
+  position: absolute;
+  top: 2svh;
+  right: 8vw;
+  height: 104svh;
+  aspect-ratio: 864 / 966;
+  background: #1c1c1c;
+  mask: url("/brand/createflowz-fl-mask.png") center / contain no-repeat;
+}
+.hero-dots {
+  position: absolute;
+  top: 42%;
+  right: 16%;
+}
+.hero-inner {
+  position: relative;
+  max-width: 900px;
+}
+.hero-eyebrow {
+  margin: 0 0 36px;
+  font-family: var(--font-display-stack);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: clamp(76px, 10vw, 168px);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.hero-line {
+  display: block;
+}
+.hero-line-accent {
+  color: var(--accent);
+}
+.hero-sub {
+  max-width: 34em;
+  margin: 40px 0 0;
+  font-size: clamp(17px, 1.35vw, 21px);
+  line-height: 1.75;
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 40px;
+  margin-top: 56px;
+}
+/* "Start a project +": a lime circle sits behind the start of the label and stretches into a pill on hover. */
+.hero-cta {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  min-height: 60px;
+  padding: 0 0 0 24px;
+  font-family: var(--font-display-stack);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  transition: color 300ms;
+}
+.hero-cta::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  background: var(--surface-hover);
+  transition:
+    width 450ms var(--ease),
+    background-color 300ms;
+}
+.hero-cta:hover {
+  color: var(--on-accent);
+}
+.hero-cta:hover::before {
+  width: calc(100% + 24px);
+  background: var(--accent);
+}
+.hero-cta svg {
+  color: var(--accent);
+  transition:
+    transform 300ms var(--ease),
+    color 300ms;
+}
+.hero-cta:hover svg {
+  color: var(--on-accent);
+  transform: rotate(90deg);
+}
+.hero-actions .text-link {
+  font-size: 17px;
+}
+.hero-scroll {
+  position: absolute;
+  right: var(--m);
+  bottom: 48px;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  min-width: 44px;
+  font-family: var(--font-display-stack);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+.hero-scroll::before {
+  content: "";
+  width: 2px;
+  height: 64px;
+  background: linear-gradient(var(--ink) 50%, #333 50%) 0 0 / 100% 200%;
+  animation: scroll-cue 2.4s var(--ease) infinite;
+}
+.hero-scroll span {
+  writing-mode: vertical-rl;
+}
+@keyframes scroll-cue {
+  from {
+    background-position: 0 100%;
+  }
+  to {
+    background-position: 0 -100%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---------- What we do: pinned; each service takes the screen in turn ---------- */
+.services {
+  padding: 0;
+}
+.wwd {
+  position: relative;
+}
+.wwd-pin {
+  position: relative;
+  padding: clamp(96px, 10vw, 140px) var(--m);
+}
+.wwd-label {
+  margin: 0 0 40px;
+  font-family: var(--font-display-stack);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.wwd-count {
+  display: none;
+}
+.wwd-items {
+  display: grid;
+  gap: 72px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wwd-word {
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: clamp(64px, 14vw, 120px);
+  line-height: 0.85;
+  text-transform: uppercase;
+  color: var(--surface-hover);
+}
+.wwd-photo {
+  position: relative;
+  width: min(70vw, 360px);
+  aspect-ratio: 1;
+  margin: 24px 0;
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.wwd-photo img {
+  object-fit: cover;
+}
+.wwd-copy {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  max-width: 40ch;
+}
+.wwd-name {
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-size: var(--t-3);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.wwd-text {
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* With JS: the block is one screen tall per service and the inner frame pins. */
+.js .wwd {
+  height: calc(var(--wwd-count) * 100svh);
+}
+.js .wwd-pin {
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+  height: 100svh;
+  min-height: 600px;
+  overflow: clip;
+  padding: calc(var(--header-h) + 40px) var(--m) clamp(40px, 6vh, 72px);
+}
+.js .wwd-count {
+  display: block;
+  position: absolute;
+  right: var(--m);
+  top: calc(var(--header-h) + 40px);
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.js .wwd-count span {
+  color: var(--accent);
+}
+.js .wwd-items {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+.js .wwd-item {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  transition: visibility 0s 600ms;
+}
+.js .wwd-item[data-active] {
+  visibility: visible;
+  transition-delay: 0s;
+}
+.js .wwd-word {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  translate: 0 -50%;
+  text-align: center;
+  font-size: clamp(120px, 24vw, 460px);
+  white-space: nowrap;
+  color: #333333;
+  opacity: 0;
+  transform: translateY(6%);
+  transition:
+    opacity 600ms var(--ease),
+    transform 800ms var(--ease);
+}
+.js .wwd-photo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(36vw, 58svh);
+  margin: 0;
+  translate: -50% -50%;
+  clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%);
+  transition: clip-path 800ms var(--ease);
+}
+.js .wwd-photo img {
+  scale: 1.15;
+  transition: scale 1200ms var(--ease);
+}
+.js .wwd-copy {
+  position: absolute;
+  right: var(--m);
+  bottom: clamp(40px, 8vh, 96px);
+  width: min(34ch, 32vw);
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 500ms var(--ease),
+    transform 600ms var(--ease);
+}
+.js .wwd-item[data-active] .wwd-word {
+  opacity: 1;
+  transform: none;
+}
+.js .wwd-item[data-active] .wwd-photo {
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.js .wwd-item[data-active] .wwd-photo img {
+  scale: 1;
+}
+.js .wwd-item[data-active] .wwd-copy {
+  opacity: 1;
+  transform: none;
+  transition-delay: 200ms;
+}
+
+/* ---------- White sections: black ink on white; lime stays for fills only ---------- */
+.on-white {
+  background: var(--white);
+  color: var(--paper-ink);
+}
+.on-white [data-placeholder],
+.on-white .case-summary {
+  color: var(--paper-muted);
+}
+.on-white .text-link:hover {
+  color: inherit;
+  text-decoration-thickness: 3px;
+}
+
+/* ---------- Statement: a white band after the hero ---------- */
+.statement {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 24px;
+  row-gap: 24px;
+  padding: clamp(96px, 11vw, 180px) var(--m);
+}
+.statement-label {
+  grid-column: 1 / span 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0.55em 0 0;
+  align-self: start;
+  font-family: var(--font-display-stack);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.statement-label::before {
+  content: "";
+  flex: none;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--paper-ink);
+}
+.statement-text {
+  grid-column: 4 / span 8;
+  margin: 0;
+  font-size: clamp(26px, 3vw, 46px);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Work: sticky text beside each store's screenshots ---------- */
+.work {
+  padding: clamp(96px, 9vw, 140px) var(--m) clamp(96px, 9vw, 140px);
+  display: grid;
+  gap: clamp(80px, 8vw, 120px);
+}
+.work-head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 24px;
+  align-items: end;
+}
+.work-title {
+  grid-column: 1 / span 6;
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: var(--t-1);
+  line-height: 0.86;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+.work-intro {
+  grid-column: 8 / -1;
+  max-width: 40ch;
+  margin: 0 0 0.6em;
+}
+.case {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 24px;
+  row-gap: 40px;
+  align-items: start;
+}
+.case-text {
+  grid-column: 1 / span 4;
+  grid-row: 1;
+  position: sticky;
+  top: calc(var(--header-h) + 48px);
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+.case-shots {
+  grid-column: 6 / -1;
+  grid-row: 1;
+  display: grid;
+  gap: 32px;
+}
+.case-flip .case-text {
+  grid-column: 9 / -1;
+}
+.case-flip .case-shots {
+  grid-column: 1 / span 7;
+}
+.case-desktop,
+.case-mobile {
+  margin: 0;
+}
+.case-desktop {
+  padding: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.case-desktop img {
+  width: 100%;
+  height: auto;
+}
+.case-mobile {
+  justify-self: end;
+  width: 44%;
+  padding: 8px;
+  border-radius: 28px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.case-mobile img {
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+}
+.case-flip .case-mobile {
+  justify-self: start;
+}
+.case-name {
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: var(--t-2);
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+.case-text p {
+  margin: 0;
+  max-width: 40ch;
+}
+.case-summary {
+  color: var(--muted);
+}
+.case-result {
+  font-size: var(--t-5);
+}
+/* Screenshots settle from a slight zoom as they scroll in, tied to scroll, not a timer. */
+@supports (animation-timeline: view()) {
+  .case-desktop img {
+    animation: settle linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 45%;
+  }
+}
+@keyframes settle {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* ---------- Process: sticky scroll, one verb at a time ---------- */
+.process {
+  background: var(--surface);
+}
+.process-title {
+  margin: 0;
+  padding: clamp(96px, 9vw, 120px) var(--m) 40px;
+  font-size: var(--t-3);
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--muted);
+}
+.steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* overflow: clip (not hidden) keeps the panel from becoming a scroll container, so the verb can stick. */
+.step {
+  position: relative;
+  height: 100svh;
+  min-height: 560px;
+  overflow: clip;
+}
+.step-photo {
+  position: absolute;
+  inset: 0;
+}
+.step-photo img {
+  object-fit: cover;
+  filter: brightness(0.45);
+}
+/* The verb holds the centre of the screen while its photograph passes, then the panel's end pushes it out.
+   The wrapper is only as tall as the word, so it can stay pinned for almost the panel's full height;
+   top = half the screen minus half the word's 0.9em line. */
+.step-verb-wrap {
+  position: sticky;
+  top: calc(50% - 0.45em);
+  z-index: 1;
+  text-align: center;
+  font-size: clamp(88px, 17vw, 300px);
+}
+.step-verb {
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: 1em;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.step:nth-child(2) .step-verb {
+  color: var(--accent);
+}
+.step-text {
+  position: absolute;
+  left: var(--m);
+  bottom: var(--m);
+  z-index: 1;
+  max-width: 40ch;
+  margin: 0;
+  padding: 16px 20px;
+  background: var(--scrim);
+}
+.step-when {
+  display: block;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.step-when [data-placeholder] {
+  color: var(--muted);
+}
+@supports (animation-timeline: view()) {
+  .step-photo img {
+    animation: step-zoom linear both;
+    animation-timeline: view();
+  }
+}
+@keyframes step-zoom {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* ---------- Proof (hidden until a real testimonial exists) ---------- */
+.proof {
+  background: var(--paper);
+  color: var(--paper-ink);
+  padding: var(--gap-section) var(--m);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 24px;
+  row-gap: 48px;
+}
+.proof-title {
+  grid-column: 1 / span 4;
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: var(--t-2);
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+.proof-quote {
+  grid-column: 6 / -1;
+  margin: 0;
+}
+.proof-quote blockquote {
+  margin: 0;
+  font-size: var(--t-3);
+  font-weight: 500;
+  line-height: 1.2;
+}
+.proof-quote blockquote p {
+  max-width: 34ch;
+  margin: 0;
+}
+.proof-quote figcaption {
+  margin-top: 24px;
+}
+.proof-foot {
+  grid-column: 6 / -1;
+  display: grid;
+  justify-items: start;
+  gap: 24px;
+}
+.proof-note {
+  max-width: 60ch;
+  margin: 0;
+}
+
+/* ---------- FAQ ---------- */
+.faq {
+  padding: clamp(96px, 9vw, 140px) var(--m) 0;
+}
+.faq-row {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 24px;
+  padding-bottom: 80px;
+}
+.faq-row h2,
+.faq-row h3 {
+  grid-column: 1 / span 6;
+  margin: 0;
+  font-size: var(--t-3);
+  font-weight: 500;
+  line-height: 1.12;
+}
+.faq-head h2 {
+  color: var(--muted);
+}
+/* Accordion: click a question to open its answer below it; the + turns into an × while open. */
+.faq-list {
+  display: grid;
+}
+.faq-item {
+  padding: 28px 0;
+}
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 44px;
+  list-style: none;
+  cursor: pointer;
+  font-size: var(--t-3);
+  font-weight: 500;
+  line-height: 1.12;
+}
+.faq-q::-webkit-details-marker {
+  display: none;
+}
+.faq-icon {
+  position: relative;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  transition: transform 250ms var(--ease);
+}
+.faq-icon::before,
+.faq-icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background: currentColor;
+}
+.faq-icon::after {
+  transform: rotate(90deg);
+}
+.faq-item[open] .faq-icon {
+  transform: rotate(45deg);
+}
+.faq-a p {
+  margin: 16px 0 0;
+  max-width: 60ch;
+  line-height: 1.55;
+}
+/* Smooth open and close where the browser supports animating to auto height. */
+@supports (interpolate-size: allow-keywords) {
+  .faq-item {
+    interpolate-size: allow-keywords;
+  }
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 300ms var(--ease),
+      content-visibility 300ms allow-discrete;
+  }
+  .faq-item[open]::details-content {
+    block-size: auto;
+  }
+}
+
+/* ---------- Contact and the brief builder ---------- */
+.contact {
+  padding: 80px var(--m) var(--gap-section);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: 24px;
+  row-gap: 48px;
+}
+.contact-lead {
+  grid-column: 1 / span 5;
+}
+.contact-lead h2 {
+  margin: 0 0 24px;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: var(--t-2);
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+.contact-sentence {
+  margin: 0;
+  font-size: var(--t-3);
+  font-weight: 500;
+  line-height: 1.2;
+}
+.contact-meta {
+  margin: 24px 0 0;
+  max-width: 40ch;
+  color: var(--muted);
+}
+.brief {
+  grid-column: 7 / -1;
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+.brief-question {
+  margin: 0;
+  font-size: var(--t-4);
+  font-weight: 600;
+}
+.brief-group {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.brief-group-name {
+  padding-top: 12px;
+  color: var(--muted);
+}
+.brief-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 200ms,
+    color 200ms,
+    transform 150ms var(--ease);
+}
+.chip:hover {
+  background: var(--surface-hover);
+}
+.chip:active {
+  transform: scale(0.96);
+}
+.chip[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.brief-flow {
+  min-height: 2.6em;
+  margin: 8px 0 0;
+  padding: 20px 24px;
+  background: var(--surface);
+  font-size: var(--t-3);
+  font-weight: 500;
+  line-height: 1.2;
+}
+.brief-arrow {
+  display: inline-block;
+  margin: 0 0.35em;
+  vertical-align: -0.08em;
+  color: var(--accent);
+}
+.brief-empty {
+  font-size: var(--t-4);
+  color: var(--muted);
+}
+.brief-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+.brief-actions .text-link {
+  margin-left: 12px;
+}
+.brief-hint {
+  margin: -8px 0 0;
+  font-size: var(--t-5);
+  color: var(--muted);
+}
+.brief-error {
+  color: var(--danger);
+}
+
+/* Latest posts and Questions on lime: black ink; lime sections that touch are split by a black rule. */
+.posts {
+  background: var(--accent);
+  color: var(--on-accent);
+  padding-bottom: clamp(72px, 7vw, 112px);
+}
+/* Questions on lime, split from the lime posts above by a black rule. */
+.faq {
+  padding-bottom: 48px;
+  border-top: 2px solid var(--on-accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.faq .faq-head h2,
+.faq [data-placeholder] {
+  color: var(--lime-muted);
+}
+.faq :focus-visible {
+  outline-color: var(--focus-on-light);
+}
+.posts .posts-arrow {
+  border-color: var(--on-accent);
+  color: var(--on-accent);
+}
+.posts .posts-arrow:hover {
+  border-color: var(--on-accent);
+  background: var(--on-accent);
+  color: var(--accent);
+}
+.posts .post-tag {
+  background: var(--on-accent);
+  color: var(--accent);
+}
+.posts .post-photo {
+  background: rgb(10 10 10 / 0.1);
+}
+.posts .post-date,
+.posts [data-placeholder] {
+  color: var(--lime-muted);
+}
+.faq.on-white .faq-head h2 {
+  color: var(--paper-muted);
+}
+/* Statement band on lime. */
+.statement.on-lime {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.statement.on-lime .statement-label::before {
+  background: var(--on-accent);
+  box-shadow: none;
+}
+.work {
+  padding-top: 0;
+}
+/* Work opens with a full white screen: eyebrow, big headline, a thin ring, a dot cluster and side labels. */
+.work-head {
+  position: relative;
+  min-height: 100svh;
+  box-sizing: border-box;
+  margin-inline: calc(-1 * var(--m));
+  padding: calc(var(--header-h) + 48px) clamp(var(--m), 12vw, 220px) 96px clamp(var(--m), 11vw, 210px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 48px;
+  overflow: clip;
+  background: var(--white);
+  color: var(--paper-ink);
+}
+.work-art {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.work-ring {
+  position: absolute;
+  top: 42%;
+  left: 66%;
+  width: 118svh;
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  border: 1px solid #e4e4e4;
+  border-radius: 50%;
+}
+.work-dots {
+  position: absolute;
+  top: 18px;
+  right: clamp(80px, 8vw, 150px);
+  color: #d6d6d6;
+}
+.work-pin {
+  position: absolute;
+  left: 54%;
+  top: 72%;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  translate: -50% -50%;
+  border: 1px solid #e4e4e4;
+  border-radius: 50%;
+}
+.work-pin::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--on-accent);
+  box-shadow: 0 0 0 3px var(--accent);
+}
+.work-copy {
+  position: relative;
+}
+.work-eyebrow {
+  margin: 0 0 56px;
+  font-family: var(--font-display-stack);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+.work-eyebrow span {
+  padding: 2px 0 2px 0.4em;
+  background: var(--accent);
+}
+.work-head .work-title {
+  margin: 0 0 0 clamp(0px, 3vw, 48px);
+  font-size: clamp(72px, 7.8vw, 128px);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+.work-side {
+  position: relative;
+  align-self: end;
+  margin-bottom: 12vh;
+}
+.work-head .work-intro {
+  max-width: 30ch;
+  margin: 0;
+  font-size: clamp(17px, 1.3vw, 20px);
+  line-height: 2;
+  color: var(--paper-muted);
+}
+.work-dash {
+  display: block;
+  width: 14px;
+  height: 2px;
+  margin-top: 28px;
+  background: var(--paper-ink);
+}
+.work-label {
+  position: absolute;
+  right: var(--m);
+  top: calc(var(--header-h) + 18vh);
+  margin: 0;
+  writing-mode: vertical-rl;
+  font-family: var(--font-display-stack);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+.work-scroll {
+  position: absolute;
+  right: var(--m);
+  bottom: 48px;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  min-width: 44px;
+  font-family: var(--font-display-stack);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+.work-scroll::before {
+  content: "";
+  width: 2px;
+  height: 64px;
+  background: var(--paper-ink);
+}
+.work-scroll span {
+  writing-mode: vertical-rl;
+}
+.statement.on-lime :focus-visible,
+.posts :focus-visible {
+  outline-color: var(--focus-on-light);
+}
+
+/* Contact on lime: black ink, black buttons, chips in a dark tint. */
+.contact {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.contact .contact-meta,
+.contact .brief-group-name,
+.contact .brief-empty,
+.contact .brief-hint,
+.contact [data-placeholder] {
+  color: var(--lime-muted);
+}
+.contact .chip {
+  background: rgb(10 10 10 / 0.1);
+  color: var(--on-accent);
+}
+.contact .chip:hover {
+  background: rgb(10 10 10 / 0.18);
+}
+.contact .chip[aria-pressed="true"] {
+  background: var(--on-accent);
+  color: var(--accent);
+}
+.contact .brief-flow {
+  background: rgb(10 10 10 / 0.08);
+}
+.contact .brief-arrow {
+  color: var(--on-accent);
+}
+.contact .btn-accent {
+  background: var(--on-accent);
+  color: var(--accent);
+}
+.contact .btn-quiet {
+  background: transparent;
+  color: var(--on-accent);
+  box-shadow: inset 0 0 0 2px var(--on-accent);
+}
+.contact .btn-quiet:hover {
+  background: rgb(10 10 10 / 0.08);
+}
+.contact .text-link:hover {
+  color: inherit;
+  text-decoration-thickness: 3px;
+}
+.contact :focus-visible {
+  outline-color: var(--focus-on-light);
+}
+.contact .brief-error {
+  color: #7a0000;
+}
+/* A black rule keeps the lime contact and the lime footer apart. */
+.footer {
+  border-top: 2px solid var(--on-accent);
+}
+
+/* ---------- Latest posts: square cards in a row that slides sideways ---------- */
+.posts {
+  padding: clamp(96px, 9vw, 140px) 0 0;
+}
+.posts-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 var(--m) 48px;
+}
+.posts-title {
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: var(--t-2);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.posts-arrows {
+  display: flex;
+  gap: 12px;
+}
+.posts-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color 200ms var(--ease), color 200ms var(--ease), border-color 200ms var(--ease);
+}
+.posts-arrow:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.posts-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: clamp(260px, 30vw, 440px);
+  gap: 24px;
+  margin: 0;
+  padding: 0 var(--m) 24px;
+  list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--m);
+  scrollbar-width: none;
+}
+.posts-track::-webkit-scrollbar {
+  display: none;
+}
+.post {
+  scroll-snap-align: start;
+}
+.post-link {
+  display: block;
+}
+.post-photo {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--surface);
+}
+.post-photo img {
+  object-fit: cover;
+  transition: transform 500ms var(--ease);
+}
+.post:hover .post-photo img {
+  transform: scale(1.04);
+}
+.post-tag {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 13px;
+  font-weight: 600;
+}
+.post-date {
+  margin: 20px 0 8px;
+  font-size: var(--t-5);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.post-title {
+  margin: 0;
+  font-size: clamp(18px, 1.4vw, 22px);
+  font-weight: 600;
+  line-height: 1.3;
+}
+.post-link:hover .post-title {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---------- Let's talk page: form beside a tall photo, on white ---------- */
+.lt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  gap: clamp(40px, 6vw, 120px);
+  padding: calc(var(--header-h) + clamp(48px, 7vw, 110px)) 0 clamp(80px, 9vw, 140px) clamp(var(--m), 9vw, 160px);
+}
+.lt-main {
+  max-width: 560px;
+}
+.lt-title {
+  margin: 0;
+  font-family: var(--font-display-stack);
+  font-weight: 800;
+  font-size: clamp(56px, 6.4vw, 104px);
+  line-height: 0.92;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.lt-intro {
+  margin: 24px 0 48px;
+  font-size: 18px;
+}
+.lt-intro a {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 0.25em;
+}
+.lt-form {
+  display: grid;
+  gap: 12px;
+}
+.lt-field input,
+.lt-field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 56px;
+  padding: 16px 20px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--paper-ink);
+  font: inherit;
+  font-size: 16px;
+  transition: border-color 200ms, background-color 200ms;
+}
+.lt-field textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+.lt-field input::placeholder,
+.lt-field textarea::placeholder {
+  color: var(--paper-muted);
+}
+.lt-field input:hover,
+.lt-field textarea:hover {
+  border-color: #c9c9c9;
+}
+.lt-field input:focus,
+.lt-field textarea:focus {
+  outline: none;
+  border-color: var(--paper-ink);
+  background: var(--white);
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+.lt-needs {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 12px;
+  padding: 0;
+  border: 0;
+}
+.lt-needs legend {
+  margin-bottom: 12px;
+  padding: 0;
+  font-family: var(--font-display-stack);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.lt-needs-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.lt-needs-group {
+  width: 56px;
+  font-size: 14px;
+  color: var(--paper-muted);
+}
+.lt .chip {
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+.lt .chip:hover {
+  background: #dcdcdc;
+}
+.lt .chip[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.lt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+  margin-top: 16px;
+}
+.lt-actions .btn {
+  gap: 10px;
+}
+.lt-status {
+  margin: 0;
+  max-width: 40ch;
+  font-size: 14px;
+}
+.lt-status:empty {
+  display: none;
+}
+.lt-error {
+  color: #b00020;
+}
+.lt-side {
+  position: relative;
+  min-height: 640px;
+}
+.lt-photo {
+  position: sticky;
+  top: calc(var(--header-h) + 24px);
+  height: min(calc(100svh - var(--header-h) - 48px), 900px);
+  min-height: 560px;
+  overflow: hidden;
+}
+.lt-photo img {
+  object-fit: cover;
+}
+.lt-side-label {
+  position: absolute;
+  top: 48px;
+  right: 24px;
+  margin: 0;
+  writing-mode: vertical-rl;
+  /* Turn the whole line on its side, so the apostrophe keeps its normal shape instead of a centred vertical form. */
+  text-orientation: sideways;
+  font-family: var(--font-display-stack);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--white);
+  mix-blend-mode: difference;
+}
+/* Pull the apostrophe in against its letters, so the wide tracking doesn't turn it into a dash. */
+.lt-apos {
+  margin-inline-start: -0.2em;
+  letter-spacing: 0.1em;
+}
+.lt-ways {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+  padding: clamp(72px, 8vw, 120px) clamp(var(--m), 9vw, 160px);
+  background: var(--paper);
+  color: var(--paper-ink);
+}
+.lt-way h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-display-stack);
+  font-size: var(--t-3);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.lt-way p {
+  margin: 0 0 20px;
+  color: var(--paper-muted);
+}
+.lt-way a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 0.3em;
+}
+.lt-way a:hover {
+  text-decoration-color: currentColor;
+}
+.lt-ways [data-placeholder] {
+  color: var(--paper-muted);
+}
+.lt-ways :focus-visible {
+  outline-color: var(--focus-on-light);
+}
+
+/* ---------- Footer: brand on the left, contact and links on the right ---------- */
+.footer {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 32px;
+  padding: clamp(96px, 10vw, 140px) var(--m) 32px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+/* Contact and links sit against the right edge, so the open space is in the middle, not the sides. */
+.footer-info {
+  justify-self: end;
+}
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+/* The mask file is white on transparent; brightness(0) turns it to the footer's black ink. */
+.footer-logo {
+  display: block;
+  width: clamp(150px, 13vw, 210px);
+}
+.footer-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: brightness(0);
+}
+.footer-tagline {
+  margin: 56px 0 0;
+  max-width: 17em;
+  font-size: clamp(20px, 1.6vw, 26px);
+  font-weight: 500;
+  line-height: 1.7;
+}
+.footer-socials {
+  display: flex;
+  gap: 18px;
+  margin: auto 0 0;
+  padding: 72px 0 0;
+  list-style: none;
+}
+.footer-socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-left: -10px;
+  transition: opacity 200ms var(--ease);
+}
+.footer-socials a:hover {
+  opacity: 0.6;
+}
+.footer-heading {
+  margin: 0 0 40px;
+  font-family: var(--font-display-stack);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.footer-contact {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 104px;
+  padding: 0;
+  list-style: none;
+  font-size: clamp(18px, 1.3vw, 22px);
+}
+.footer-contact a {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+}
+.footer-contact a:hover {
+  text-decoration-thickness: 3px;
+}
+.footer-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 32px;
+  font-size: clamp(18px, 1.3vw, 22px);
+}
+.footer-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.footer-nav a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+.footer-address {
+  margin: 20px 0 0;
+  font-size: clamp(16px, 1.2vw, 20px);
+  color: var(--lime-muted);
+}
+.footer-meta {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 32px;
+  margin-top: 96px;
+  font-size: var(--t-5);
+  color: var(--lime-muted);
+}
+.footer-meta a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.footer-meta p {
+  margin: 0;
+  align-self: center;
+}
+
+/* ---------- Entrances (only when scripted) ---------- */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 600ms var(--ease-expo) var(--reveal-delay, 0ms),
+    transform 800ms var(--ease-expo) var(--reveal-delay, 0ms);
+}
+.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Windows high contrast: drop the two-ink fill so the headline stays visible ---------- */
+@media (forced-colors: active) {
+  .hero-title {
+    background: none;
+    -webkit-text-fill-color: CanvasText;
+  }
+  .wordmark-mark {
+    background-color: CanvasText;
+  }
+}
+
+/* ---------- Tablet and phone: no pinned case text; the phone shot overlaps the laptop shot ---------- */
+@media (max-width: 1100px) {
+  .case-text,
+  .case-flip .case-text {
+    position: static;
+    grid-column: 1 / span 9;
+    grid-row: 2;
+  }
+  .case-shots,
+  .case-flip .case-shots {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: block;
+    position: relative;
+    padding-bottom: 40px;
+  }
+  .case-mobile,
+  .case-flip .case-mobile {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 30%;
+    padding: 6px;
+    border-radius: 22px;
+    background: var(--bg);
+  }
+  .case-mobile img {
+    border-radius: 16px;
+  }
+}
+
+/* ---------- Tablet ---------- */
+@media (min-width: 761px) and (max-width: 1100px) {
+  .contact-lead,
+  .brief {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 760px) {
+  :root {
+    --t-1: 13vw;
+    --t-2: 9vw;
+    --t-3: 24px;
+    --header-h: 68px;
+  }
+  .site-header {
+    gap: 16px;
+  }
+  .wordmark-mark {
+    height: 22px;
+  }
+  .header-talk {
+    font-size: 16px;
+  }
+  .menu-btn {
+    width: 44px;
+    height: 44px;
+  }
+  .hero {
+    align-items: flex-end;
+    padding: calc(var(--header-h) + 32px) var(--m) 88px;
+  }
+  .hero-mark {
+    right: -30vw;
+    height: 80svh;
+    top: 6svh;
+  }
+  .hero-ring {
+    left: 80%;
+    width: 90svh;
+  }
+  .hero-dots {
+    top: 18%;
+    right: 10%;
+  }
+  .hero-eyebrow {
+    margin-bottom: 24px;
+    font-size: 15px;
+    letter-spacing: 0.3em;
+  }
+  .hero-title {
+    font-size: 22vw;
+  }
+  .hero-sub {
+    margin-top: 24px;
+    font-size: 16px;
+  }
+  .hero-actions {
+    margin-top: 32px;
+    gap: 12px 28px;
+  }
+  .hero-scroll {
+    display: none;
+  }
+
+
+  .work-head {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    row-gap: 40px;
+    padding-right: var(--m);
+    min-height: 92svh;
+  }
+  .work-head .work-title {
+    margin-left: 0;
+    font-size: 16vw;
+  }
+  .work-eyebrow {
+    margin-bottom: 32px;
+    font-size: 15px;
+    letter-spacing: 0.3em;
+  }
+  .work-side {
+    margin-bottom: 0;
+  }
+  .work-label,
+  .work-scroll,
+  .work-pin {
+    display: none;
+  }
+  .work-ring {
+    left: 80%;
+    width: 90svh;
+  }
+  .work-dots {
+    right: 16px;
+    top: 80px;
+  }
+  .work-title,
+  .work-intro,
+  .case-text,
+  .case-flip .case-text {
+    grid-column: 1 / -1;
+  }
+
+  .step-verb-wrap {
+    font-size: 22vw;
+  }
+  .step-text {
+    right: var(--m);
+    font-size: 16px;
+  }
+
+  .proof-title,
+  .proof-quote,
+  .proof-foot {
+    grid-column: 1 / -1;
+  }
+
+  .faq-row {
+    padding-bottom: 56px;
+  }
+  .faq-row h2,
+  .faq-row h3,
+  .faq-row p {
+    grid-column: 1 / -1;
+  }
+  .faq-row p {
+    margin-top: 12px;
+  }
+  .faq-item {
+    padding: 20px 0;
+  }
+
+  .contact-lead,
+  .brief {
+    grid-column: 1 / -1;
+  }
+  .brief-group {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .brief-group-name {
+    padding-top: 0;
+  }
+
+  .js .wwd-photo {
+    top: 44%;
+    width: min(68vw, 40svh);
+  }
+  .js .wwd-word {
+    top: 44%;
+    font-size: 26vw;
+  }
+  .js .wwd-copy {
+    left: var(--m);
+    width: auto;
+    bottom: 32px;
+  }
+  .js .wwd-count {
+    top: calc(var(--header-h) + 40px);
+  }
+  .lt {
+    grid-template-columns: minmax(0, 1fr);
+    padding-right: var(--m);
+  }
+  .lt-side {
+    min-height: 0;
+    order: -1;
+  }
+  .lt-photo {
+    position: relative;
+    top: 0;
+    height: 46svh;
+    min-height: 300px;
+  }
+  .lt-ways {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+  .statement-label,
+  .statement-text {
+    grid-column: 1 / -1;
+  }
+  .statement-label {
+    margin-top: 0;
+  }
+  .posts-track {
+    grid-auto-columns: 78vw;
+    gap: 16px;
+  }
+  .posts-arrow {
+    width: 44px;
+    height: 44px;
+  }
+  .footer {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 72px;
+  }
+  .footer-info {
+    justify-self: stretch;
+  }
+  .footer-tagline {
+    margin-top: 32px;
+  }
+  .footer-socials {
+    padding: 32px 0 56px;
+  }
+  .footer-heading {
+    margin-bottom: 20px;
+  }
+  .footer-contact {
+    margin-bottom: 56px;
+  }
+  .footer-nav {
+    gap: 0 24px;
+  }
+  .footer-meta {
+    margin-top: 56px;
+  }
+}
+
+/* ---------- Reduced motion: keep the content, drop the travel ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal],
+  .js [data-reveal].is-in {
+    transform: none;
+    transition: opacity 300ms;
+  }
+  .case-desktop img,
+  .step-photo img,
+  .hero-scroll::before,
+  .nav-menu[open] .menu-panel {
+    animation: none;
+  }
+  .js .wwd-item *,
+  .js .wwd-item {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+  .btn:hover,
+  .btn:active,
+  .chip:active {
+    transform: none;
+  }
 }
