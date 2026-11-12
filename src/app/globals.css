@@ -9,7 +9,7 @@
   --grey: #5a5a56;
   --tint: #eefae1;
   --tint-card: #eef9e1;
-  --pad: max(16px, calc((100vw - 1200px) / 2));
+  --pad: max(16px, 8.33vw);
   --display: var(--font-display), "Space Grotesk", sans-serif;
 }
 
@@ -89,7 +89,7 @@ h2 {
 .hero-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; margin-top: 46px; }
 .hero h1 {
   font-family: var(--display); font-weight: 500;
-  font-size: clamp(48px, 7.64vw, 110px); line-height: 1.036; letter-spacing: -0.056em;
+  font-size: clamp(48px, 7.64vw, 160px); line-height: 1.036; letter-spacing: -0.056em;
 }
 .hero h1 mark {
   display: inline-block; padding: 0 0.055em 0 0.33em; margin-left: 0.04em;
@@ -288,13 +288,9 @@ h2 {
   border-top: 1px solid var(--line); color: #8f8f8a; font-size: 13px;
 }
 
-/* ≤1380: keep the WhatsApp button inside the page */
-@media (max-width: 1380px) {
-  .whatsapp { right: 20px; top: 20px; }
-}
-
 /* Tablet */
 @media (max-width: 1100px) {
+  .whatsapp { right: 20px; top: 20px; }
   .nav { display: none; }
   .header > .btn { display: none; }
   .menu { display: block; position: relative; }
