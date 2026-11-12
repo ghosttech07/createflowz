@@ -9,7 +9,7 @@
   --grey: #5a5a56;
   --tint: #eefae1;
   --tint-card: #eef9e1;
-  --pad: max(16px, 8.33vw);
+  --pad: clamp(16px, 3vw, 64px);
   --display: var(--font-display), "Space Grotesk", sans-serif;
 }
 
@@ -120,7 +120,7 @@ h2 {
 .hero-media { position: relative; margin-top: 43px; }
 .hero-media img { width: 100%; border-radius: 24px; }
 .whatsapp {
-  position: absolute; top: 43px; right: -80px; display: grid; place-items: center;
+  position: fixed; right: 24px; bottom: 24px; z-index: 20; display: grid; place-items: center;
   width: 64px; height: 64px; border-radius: 50%; background: var(--lime); color: var(--ink);
   transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
@@ -290,7 +290,6 @@ h2 {
 
 /* Tablet */
 @media (max-width: 1100px) {
-  .whatsapp { right: 20px; top: 20px; }
   .nav { display: none; }
   .header > .btn { display: none; }
   .menu { display: block; position: relative; }
