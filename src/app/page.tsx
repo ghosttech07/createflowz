@@ -1,4 +1,5 @@
 import Image from "next/image";
+import MobileMenu from "./mobile-menu";
 
 const services = [
   { name: "Social Media Management", text: "Strategy, calendars, posting and community, handled end to end.", points: ["Content strategy", "Monthly calendar", "Community replies"], icon: "share" },
@@ -84,17 +85,25 @@ export default function Home() {
         <header className="header">
           <a href="#top" className="logo" aria-label="Createflowz home" />
           <nav className="nav" aria-label="Main">
-            {nav.map((n, i) => (
-              <a key={n} href={`#${n.toLowerCase()}`} aria-current={i === 0 ? "true" : undefined}>{n}</a>
+            {nav.map((n) => (
+              <a key={n} href={`#${n.toLowerCase()}`}>{n}</a>
             ))}
           </nav>
           <a href="#contact" className="btn btn-lime btn-sm">Free audit <Arrow /></a>
-          <details className="menu">
+          <MobileMenu>
             <summary aria-label="Open menu"><span /><span /></summary>
             <div className="menu-panel">
-              {nav.map((n) => <a key={n} href={`#${n.toLowerCase()}`}>{n}</a>)}
+              <nav aria-label="Main">
+                {nav.map((n, i) => (
+                  <a key={n} href={`#${n.toLowerCase()}`}>
+                    <span className="menu-n">0{i + 1}</span>{n}<Arrow />
+                  </a>
+                ))}
+              </nav>
+              <a href="#contact" className="btn btn-lime menu-cta">Get my free audit <Arrow /></a>
+              <p className="menu-meta">Reply within 24h · <a href="mailto:hello@createflowz.com">hello@createflowz.com</a></p>
             </div>
-          </details>
+          </MobileMenu>
         </header>
 
         <p className="hero-kicker" id="top"><span aria-hidden="true" />Social media &amp; content agency for growing brands</p>

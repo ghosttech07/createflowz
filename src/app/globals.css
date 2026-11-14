@@ -78,7 +78,7 @@ h2 {
   border: 1px solid var(--line); border-radius: 999px; background: var(--card);
 }
 .nav a { padding: 0 18px; color: var(--muted); transition: color 0.2s; }
-.nav a:hover, .nav a[aria-current] { color: #fff; }
+.nav a:hover, .nav a:focus-visible { color: #fff; }
 .menu { display: none; }
 
 .hero-kicker {
@@ -302,11 +302,32 @@ h2 {
   .menu[open] summary span:first-child { transform: translateY(4px) rotate(45deg); }
   .menu[open] summary span:last-child { transform: translateY(-4px) rotate(-45deg); }
   .menu-panel {
-    position: absolute; right: 0; top: 60px; z-index: 10; display: grid; min-width: 200px; padding: 10px;
-    border: 1px solid var(--line); border-radius: 20px; background: var(--card);
+    position: absolute; right: 0; top: 60px; z-index: 10; width: min(320px, calc(100vw - 32px)); padding: 10px;
+    border: 1px solid var(--line); border-radius: 24px; background: var(--card);
+    box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.6);
+    transform-origin: top right;
   }
-  .menu-panel a { padding: 12px 14px; border-radius: 12px; }
-  .menu-panel a:hover { background: #262624; }
+  .menu[open] .menu-panel { animation: menu-in 0.22s cubic-bezier(0.2, 0, 0, 1); }
+  @keyframes menu-in { from { opacity: 0; transform: translateY(-6px) scale(0.97); } }
+  .menu-panel nav { display: grid; }
+  .menu-panel nav a {
+    display: flex; align-items: center; gap: 14px; padding: 14px 14px;
+    border-radius: 14px; color: #fff;
+    font-family: var(--display); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; line-height: 28px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .menu-panel nav a + a { box-shadow: 0 -1px 0 var(--line); }
+  .menu-n { width: 22px; color: var(--lime); font-family: var(--font-body), sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; }
+  .menu-panel nav a svg { margin-left: auto; color: var(--lime); opacity: 0; transform: translate(-4px, 4px); transition: opacity 0.2s, transform 0.2s cubic-bezier(0.2, 0, 0, 1); }
+  .menu-panel nav a:hover, .menu-panel nav a:focus-visible { background: var(--lime); color: var(--ink); box-shadow: none; }
+  .menu-panel nav a:hover + a, .menu-panel nav a:focus-visible + a { box-shadow: none; }
+  .menu-panel nav a:hover .menu-n, .menu-panel nav a:focus-visible .menu-n,
+  .menu-panel nav a:hover svg, .menu-panel nav a:focus-visible svg { color: var(--ink); }
+  .menu-panel nav a:hover svg, .menu-panel nav a:focus-visible svg { opacity: 1; transform: none; }
+  .menu-cta { width: 100%; justify-content: center; margin-top: 10px; }
+  .menu-meta { padding: 12px 4px 4px; color: var(--muted); font-size: 12.5px; text-align: center; }
+  .menu-meta a { color: #fff; }
+  @media (prefers-reduced-motion: reduce) { .menu[open] .menu-panel { animation: none; } }
   .hero-head, .sec-head { flex-direction: column; align-items: flex-start; }
   .hero-lede, .sec-lede, .dark-sec .sec-lede, .sec-side { width: auto; max-width: 560px; }
   .br-desk { display: none; }
