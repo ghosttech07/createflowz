@@ -71,7 +71,10 @@ export function SiteFooter() {
   return (
     <footer className="footer">
       <div className="footer-top">
-        <p>Creative growth agency for brands that want clients, not just likes.</p>
+        <div className="footer-brand">
+          <Link href="/" className="logo" aria-label="Createflowz home" />
+          <p>Creative growth agency for brands that want clients, not just likes.</p>
+        </div>
         <div className="footer-cols">
           {footerCols.map(([t, links]) => (
             <nav key={t} aria-label={t}>
@@ -81,7 +84,6 @@ export function SiteFooter() {
           ))}
         </div>
       </div>
-      <div className="wordmark" role="img" aria-label="Createflowz" />
       <div className="footer-bottom"><span>© 2026 Createflowz</span><span><a href="#privacy">Privacy</a> · <a href="#terms">Terms</a></span></div>
     </footer>
   );

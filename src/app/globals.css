@@ -269,9 +269,11 @@ h2 {
 .form-note { margin-top: -4px; text-align: center; color: #6b6b66; font-size: 13px; }
 
 /* Footer */
-.footer { background: var(--card); color: #fff; padding: 90px var(--pad) 40px; }
+.footer { background: var(--card); color: #fff; padding: 90px var(--pad) 104px; }
 .footer-top { display: flex; justify-content: space-between; gap: 40px; }
-.footer-top > p { max-width: 340px; color: var(--muted-2); font-size: 17px; line-height: 30px; }
+.footer-brand { padding-top: 22px; }
+.footer-brand .logo { display: block; }
+.footer-brand p { max-width: 340px; margin-top: 26px; color: var(--muted-2); font-size: 17px; line-height: 30px; }
 .footer-cols { display: flex; }
 .footer-cols nav:nth-child(1) { width: 144px; }
 .footer-cols nav:nth-child(2) { width: 181px; }
@@ -285,7 +287,7 @@ h2 {
   mask: url(/brand/createflowz-mask.png) center / 100% 100% no-repeat;
 }
 .footer-bottom {
-  display: flex; justify-content: space-between; gap: 16px; margin-top: 60px; padding-top: 24px;
+  display: flex; justify-content: space-between; gap: 16px; margin-top: 88px; padding-top: 24px;
   border-top: 1px solid var(--line); color: #8f8f8a; font-size: 13px;
 }
 
