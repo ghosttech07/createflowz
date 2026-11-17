@@ -146,6 +146,7 @@ h2 {
 }
 .stat { font-family: var(--display); font-size: 56px; font-weight: 500; line-height: 56px; letter-spacing: -0.03em; }
 .stat span { color: var(--lime); }
+.stat .count { display: inline-block; font-weight: inherit; font-variant-numeric: tabular-nums; }
 .stat-label { margin-top: 6px; color: var(--muted-2); font-size: 16px; line-height: 24px; }
 .trusted { margin-top: 55px; text-align: center; color: var(--muted-2); font-size: 13px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; }
 .logos {

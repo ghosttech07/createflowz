@@ -1,33 +1,14 @@
 import Image from "next/image";
-import MobileMenu from "./mobile-menu";
-
-const services = [
-  { name: "Social Media Management", text: "Strategy, calendars, posting and community, handled end to end.", points: ["Content strategy", "Monthly calendar", "Community replies"], icon: "share" },
-  { name: "Reels & Video Editing", text: "Scroll-stopping short-form video with hooks built for retention.", points: ["Scripts & hooks", "Editing & captions", "Motion graphics"], icon: "video", dark: true },
-  { name: "Automation & DM Funnels", text: "Comment-to-DM flows that capture and follow up leads 24/7.", points: ["Keyword DM flows", "Lead capture", "Auto follow-ups"], icon: "bolt" },
-  { name: "Paid Ads", text: "Meta and Google campaigns built on content that already works.", points: ["Campaign setup", "Creative testing", "Revenue tracking"], icon: "target" },
-  { name: "Branding & Design", text: "Identity, templates and carousels people recognise instantly.", points: ["Logo & identity", "Post templates", "Carousels"], icon: "pen" },
-  { name: "Websites & Landing Pages", text: "Fast sites designed in Figma and built to book calls.", points: ["UI/UX design", "Development", "Conversion copy"], icon: "monitor" },
-] as const;
+import Link from "next/link";
+import { Arrow, Tick, Icon, Eyebrow } from "@/components/icons";
+import { SiteHeader, SiteFooter, CtaBand } from "@/components/site";
+import { services, cases, steps, stats } from "@/lib/content";
+import CountUp from "@/components/count-up";
 
 const problems = [
   { n: "01", title: "Posting without a plan", text: "A 90-day content strategy built around what your buyers actually search and watch." },
   { n: "02", title: "Content nobody finishes", text: "Hooks, scripts and edits designed for retention, so every reel earns its views.", dark: true },
   { n: "03", title: "Followers, but no clients", text: "Comment-to-DM funnels and follow-ups that turn engagement into booked calls." },
-];
-
-const cases = [
-  { name: "Café brand — Instagram growth", tags: "Social Media · Reels", img: "/images/work-cafe.jpg", alt: "A barista pouring latte art while a phone on a tripod films him. Result: +412% reach" },
-  { name: "Fitness coach — Reels series", tags: "Video Editing", img: "/images/work-fitness.jpg", alt: "A coach filmed mid-squat with a kettlebell. Result: 2.1M views" },
-  { name: "Real estate — DM automation", tags: "Automation · Paid Ads", img: "/images/work-real-estate.jpg", alt: "Three agents talking in a bright apartment. Result: 850 leads a month" },
-  { name: "Skincare startup — Brand & website", tags: "Branding · Web", img: "/images/work-skincare.jpg", alt: "Skincare bottles and packaging laid out on stone. Result: a new identity" },
-];
-
-const steps = [
-  { n: "01", title: "Discover", text: "A free call to understand your business, audience and goals." },
-  { n: "02", title: "Strategy", text: "We audit your accounts and competitors, then build a 90-day plan." },
-  { n: "03", title: "Create & launch", text: "We script, shoot, edit and publish. Automations and ads go live." },
-  { n: "04", title: "Grow & optimise", text: "Monthly reports on what works, and the next moves to scale." },
 ];
 
 const quotes = [
@@ -40,71 +21,11 @@ const chips = ["Social media management", "Reels & video editing", "DM automatio
 const marquee = ["Social Media", "Reels & Video", "Paid Ads", "Automation", "Branding", "Websites"];
 const logos = ["Brewhaus", "FITLAB", "nestify", "Glowé", "URBANLY", "Kraft & Co"];
 
-function Arrow() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true">
-      <path d="M2.5 9.5L9.5 2.5M4 2.5h5.5V8" fill="none" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function Tick() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 12 12" aria-hidden="true">
-      <path d="M2 6.3l2.6 2.6L10 3.4" fill="none" stroke="currentColor" strokeWidth="1.4" />
-    </svg>
-  );
-}
-
-function Icon({ name }: { name: string }) {
-  const paths: Record<string, React.ReactNode> = {
-    share: (<><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" /></>),
-    video: (<><rect x="2.5" y="6.5" width="13" height="11" rx="2" /><path d="M15.5 10.5l6-3.5v10l-6-3.5" /></>),
-    bolt: <path d="M13 2L4 14h7l-1 8 9-12h-7z" />,
-    target: (<><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" /></>),
-    pen: (<><path d="M12 19l7-7 3 3-7 7zM18 13l-1.5-7.5L2 2l3.5 14.5L13 18zM2 2l7.6 7.6" /><circle cx="11" cy="11" r="2" /></>),
-    monitor: (<><rect x="2.5" y="3.5" width="19" height="13" rx="2" /><path d="M8 21h8M12 16.5V21" /></>),
-  };
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {paths[name]}
-    </svg>
-  );
-}
-
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <p className="eyebrow"><span aria-hidden="true" />{children}</p>;
-}
-
-const nav = ["Services", "Process", "Work", "About", "Contact"];
-
 export default function Home() {
   return (
     <>
       <section className="hero" aria-labelledby="hero-title">
-        <header className="header">
-          <a href="#top" className="logo" aria-label="Createflowz home" />
-          <nav className="nav" aria-label="Main">
-            {nav.map((n) => (
-              <a key={n} href={`#${n.toLowerCase()}`}>{n}</a>
-            ))}
-          </nav>
-          <a href="#contact" className="btn btn-lime btn-sm">Free audit <Arrow /></a>
-          <MobileMenu>
-            <summary aria-label="Open menu"><span /><span /></summary>
-            <div className="menu-panel">
-              <nav aria-label="Main">
-                {nav.map((n, i) => (
-                  <a key={n} href={`#${n.toLowerCase()}`}>
-                    <span className="menu-n">0{i + 1}</span>{n}<Arrow />
-                  </a>
-                ))}
-              </nav>
-              <a href="#contact" className="btn btn-lime menu-cta">Get my free audit <Arrow /></a>
-              <p className="menu-meta">Reply within 24h · <a href="mailto:hello@createflowz.com">hello@createflowz.com</a></p>
-            </div>
-          </MobileMenu>
-        </header>
+        <SiteHeader />
 
         <p className="hero-kicker" id="top"><span aria-hidden="true" />Social media &amp; content agency for growing brands</p>
 
@@ -129,7 +50,7 @@ export default function Home() {
           </div>
           <div className="proof">
             <div className="dots" aria-hidden="true"><i /><i /><i /><i /></div>
-            <p><strong>120+ brands</strong>trust us with their growth</p>
+            <p><strong>35+ brands</strong>trust us with their growth</p>
           </div>
         </div>
 
@@ -153,8 +74,8 @@ export default function Home() {
 
       <section className="stats-wrap" aria-label="Results in numbers">
         <div className="stats">
-          {[["120", "+", "Brands grown"], ["45", "M+", "Views generated"], ["3", "x", "Average lead growth"], ["98", "%", "Client retention"]].map(([n, u, l]) => (
-            <div key={l}><p className="stat">{n}<span>{u}</span></p><p className="stat-label">{l}</p></div>
+          {stats.map(([n, u, l]) => (
+            <div key={l}><p className="stat"><CountUp to={n} /><span>{u}</span></p><p className="stat-label">{l}</p></div>
           ))}
         </div>
         <p className="trusted">Trusted by fast-growing brands</p>
@@ -190,7 +111,7 @@ export default function Home() {
           </div>
           <div className="sec-side">
             <p className="sec-lede">Pick one service or let us run the whole engine. Either way, you get one team and one plan.</p>
-            <a href="#contact" className="btn btn-dark">Explore all services <Arrow /></a>
+            <Link href="/process" className="btn btn-dark">See how each service works <Arrow /></Link>
           </div>
         </div>
         <div className="services">
@@ -198,7 +119,7 @@ export default function Home() {
             <article key={s.name} className={"dark" in s && s.dark ? "service dark" : "service"}>
               <div className="service-top">
                 <span className="service-icon"><Icon name={s.icon} /></span>
-                <a href="#contact" className="service-arrow" aria-label={`Ask about ${s.name}`}><Arrow /></a>
+                <Link href={`/process#${s.slug}`} className="service-arrow" aria-label={`How we do ${s.name}`}><Arrow /></Link>
               </div>
               <h3>{s.name}</h3>
               <p>{s.text}</p>
@@ -208,13 +129,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="cta" aria-labelledby="cta-title">
-        <div>
-          <h2 id="cta-title">Not sure where to start?</h2>
-          <p>Get a free audit of your Instagram. We’ll show you exactly what to fix, in a 20-minute call.</p>
-        </div>
-        <a href="#contact" className="btn btn-dark">Get my free Instagram audit <Arrow /></a>
-      </section>
+      <CtaBand />
 
       <section id="work" className="section white" aria-labelledby="work-title">
         <div className="sec-head">
@@ -222,15 +137,15 @@ export default function Home() {
             <Eyebrow>Selected work</Eyebrow>
             <h2 id="work-title">Results we’re proud of.</h2>
           </div>
-          <a href="#contact" className="btn btn-dark">Start your project <Arrow /></a>
+          <Link href="/work" className="btn btn-dark">See all our work <Arrow /></Link>
         </div>
         <div className="cases">
           {cases.map((c) => (
             <article key={c.name} className="case">
-              <Image src={c.img} alt={c.alt} width={1176} height={800} sizes="(min-width: 1440px) 588px, (min-width: 900px) 46vw, 92vw" />
+              <Image src={c.img} alt={`${c.alt}. Result: ${c.metric} ${c.metricLabel.toLowerCase()}`} width={1176} height={800} sizes="(min-width: 1440px) 588px, (min-width: 900px) 46vw, 92vw" />
               <div className="case-foot">
                 <div><h3>{c.name}</h3><p>{c.tags}</p></div>
-                <a href="#contact" className="case-arrow" aria-label={`Open case study: ${c.name}`}><Arrow /></a>
+                <Link href={`/work#${c.slug}`} className="case-arrow" aria-label={`Open case study: ${c.name}`}><Arrow /></Link>
               </div>
             </article>
           ))}
@@ -292,25 +207,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="footer">
-        <div className="footer-top">
-          <p>Creative growth agency for brands that want clients, not just likes.</p>
-          <div className="footer-cols">
-            {[
-              ["Agency", ["About", "Work", "Process", "Careers"]],
-              ["Services", ["Social media", "Reels & video", "Automation", "Websites"]],
-              ["Follow", ["Instagram", "LinkedIn", "YouTube", "Behance"]],
-            ].map(([t, links]) => (
-              <nav key={t as string} aria-label={t as string}>
-                <p>{t as string}</p>
-                {(links as string[]).map((l) => <a key={l} href={`#${l.toLowerCase().split(" ")[0]}`}>{l}</a>)}
-              </nav>
-            ))}
-          </div>
-        </div>
-        <div className="wordmark" role="img" aria-label="Createflowz" />
-        <div className="footer-bottom"><span>© 2026 Createflowz</span><span><a href="#privacy">Privacy</a> · <a href="#terms">Terms</a></span></div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

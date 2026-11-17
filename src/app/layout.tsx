@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import "./pages.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-body" });
 const grotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-display" });
@@ -13,7 +14,7 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Createflowz | Social media that brings you clients",
+  title: { default: "Createflowz | Social media that brings you clients", template: "%s | Createflowz" },
   description:
     "We plan, shoot, edit and post your reels, run your ads and automate your DMs, so your followers turn into paying customers.",
 };
